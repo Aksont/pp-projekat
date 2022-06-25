@@ -65,6 +65,42 @@ class CyrilicsMapper():
             'Ш' : 'SY',
             'ш' : 'sy'
         }
+        self.do()
+        
+    def do(self):
+        print("I am reading file...\n")
+        self.read()
+        print(self.content)
+        print()
+
+        print("Parsing...\n")
+        self.parse_cyrilic_content()
+        print(self.parsed_content)
+        print()
+
+        print("Creating new file...\n")
+        self.create_new_file()
+        print("The file " +  self.new_filename + " is created.")
+
+    def read(self):
+        full_filename = "test.txt"
+        self.new_filename = "parsed_" + full_filename
+        f = open(full_filename, encoding = 'utf-8', mode = 'r')
+        self.content = f.read()
+        f.close()
+
+    def parse_cyrilic_content(self):
+        self.parsed_content = ""
+        for c in self.content:
+            if c in self.cyrilics_mapper:
+                self.parsed_content += self.cyrilics_mapper[c]
+            else:
+                self.parsed_content += c
+
+    def create_new_file(self):
+        new_f = open(self.new_filename, "w")
+        new_f.write(self.parsed_content)
+        new_f.close()
 
 
 if __name__ == "__main__":
