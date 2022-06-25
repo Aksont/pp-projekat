@@ -1,6 +1,6 @@
 Ja sam cyirilicsan 
 tekst{
-{
+{ Basysysy su ovo sve cyirilicsna slova vidi dy sy zycycysycsnylyaalylylyly
 hehe
 };
 123 

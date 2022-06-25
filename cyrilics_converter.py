@@ -1,3 +1,15 @@
+# Aleksa Stanivuk SW29/2019
+#
+# for this script to work 
+# you need to pass a file name (including extension) 
+# through the command line
+#
+# example:
+# python cyrilics_converter.py test.txt
+
+import sys
+import os.path
+
 class CyrilicsMapper():
 
     cyrilics_mapper = dict()
@@ -65,29 +77,38 @@ class CyrilicsMapper():
             'Ш' : 'SY',
             'ш' : 'sy'
         }
-        self.do()
         
     def do(self):
-        print("I am reading file...\n")
-        self.read()
-        print(self.content)
-        print()
+        if self.parse_command_line_args():
+            print("I am reading file...\n")
+            if self.read():
+                print(self.content)
+                print()
 
-        print("Parsing...\n")
-        self.parse_cyrilic_content()
-        print(self.parsed_content)
-        print()
+                print("Parsing...\n")
+                self.parse_cyrilic_content()
+                print(self.parsed_content)
+                print()
 
-        print("Creating new file...\n")
-        self.create_new_file()
-        print("The file " +  self.new_filename + " is created.")
+                print("Creating new file...\n")
+                self.create_new_file()
+                print("The file " +  self.new_filename + " is created.")
+        else:
+            print("No filename parameter was passed.")
 
     def read(self):
-        full_filename = "test.txt"
-        self.new_filename = "parsed_" + full_filename
-        f = open(full_filename, encoding = 'utf-8', mode = 'r')
-        self.content = f.read()
-        f.close()
+        self.new_filename = "parsed_" + self.full_filename
+
+        if (os.path.exists(self.full_filename)):
+            f = open(self.full_filename, encoding = 'utf-8', mode = 'r')
+            self.content = f.read()
+            f.close()
+            
+            return True
+        else:
+            print("File named " + self.full_filename + " does not exist.")
+
+            return False
 
     def parse_cyrilic_content(self):
         self.parsed_content = ""
@@ -102,6 +123,14 @@ class CyrilicsMapper():
         new_f.write(self.parsed_content)
         new_f.close()
 
+    def parse_command_line_args(self):
+        if (len(sys.argv) == 1):
+            return False
+        
+        self.full_filename = sys.argv[1]
+        return True
 
 if __name__ == "__main__":
+    
     cm = CyrilicsMapper()
+    cm.do()
