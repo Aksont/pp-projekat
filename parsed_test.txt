@@ -1,0 +1,8 @@
+Ja sam cyirilicsan 
+tekst{
+{
+hehe
+};
+123 
+a ko si ti?;
+}
