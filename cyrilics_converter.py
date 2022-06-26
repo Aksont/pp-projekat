@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+#
 # Aleksa Stanivuk SW29/2019
 #
 # for this script to work 
@@ -8,7 +10,7 @@
 # python cyrilics_converter.py test.txt
 
 import sys
-import os.path
+from os import path
 
 class CyrilicsMapper():
 
@@ -99,8 +101,8 @@ class CyrilicsMapper():
     def read(self):
         self.new_filename = "parsed_" + self.full_filename
 
-        if (os.path.exists(self.full_filename)):
-            f = open(self.full_filename, encoding = 'utf-8', mode = 'r')
+        if (path.exists(self.full_filename)):
+            f = open(self.full_filename, 'r')
             self.content = f.read()
             f.close()
             
