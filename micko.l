@@ -27,9 +27,16 @@
 
 "jovan"		       { return _JSON; } // json ID = {["ID" : "ID"] || ["ID" : num]}
 
+"druzyba"	       { return _LIST; } // list / collection 
+"za"		       { return _FOR_EACH; } // for each element in 
+"svaki"                { return _EACH; } // each
+"unutar"               { return _IN; } // in list
+
 "dyordye"	       { yylval.i = _BOOL; return _TYPE; } // bool - George Bool
 "istina" 	       { return _TRUE; } // true
 "jeres"		       { return _FALSE; } // false
+
+"++"		       { return _INC; }
 
 "("                  { return _LPAREN; }
 ")"                  { return _RPAREN; }

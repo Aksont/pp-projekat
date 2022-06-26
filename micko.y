@@ -43,11 +43,15 @@
 %token <i> _AROP
 %token <i> _RELOP
 
+%token _INT
+
 %type <i> num_exp exp literal
 %type <i> function_call argument rel_exp if_part
 
 %nonassoc ONLY_IF
 %nonassoc _ELSE
+
+
 
 %%
 
@@ -136,7 +140,22 @@ statement
   | assignment_statement
   | if_statement
   | return_statement
+  | inc_statement
   ;
+
+inc_statement
+	: _ID 
+	{
+		if (lookup_symbol($1, FUN)!=NO_INDEX) {
+			err("Postincrement may be only used on variables, not functions.");
+		}
+		int idx = lookup_symbol($1, VAR|PAR);
+
+    		if(idx == NO_INDEX)
+      			err("invalid lvalue '%s' in assignment", $1); 
+	}
+	_INC _SEMICOLON
+	;
 
 compound_statement
   : _LBRACKET statement_list _RBRACKET
