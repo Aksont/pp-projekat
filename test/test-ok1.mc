@@ -1,6 +1,7 @@
-//OPIS: inc promenljive
-int main() {
-    int a;
-    a = 5;
-    a++;
+цео main() {
+	цео а;
+	цео б;
+	а = 3;
+	б = 4;
+	б = б + а;
 }

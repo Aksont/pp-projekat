@@ -43,7 +43,30 @@
 %token <i> _AROP
 %token <i> _RELOP
 
-%token _INT
+
+%token _FOR
+%token _BREAK
+%token _WHILE
+%token _DO
+
+%token _SWITCH
+%token _CASE
+%token _DEFAULT
+
+%token _JSON
+%token _DOUBLEDOT
+%token _DOT
+%token _ZAPETA
+
+%token _LIST
+%token _FOR_EACH
+%token _EACH
+%token _IN
+%token _LSQUAREBRACKER
+%token _RSQUAREBRACKER
+
+%token _INC
+
 
 %type <i> num_exp exp literal
 %type <i> function_call argument rel_exp if_part
@@ -51,11 +74,9 @@
 %nonassoc ONLY_IF
 %nonassoc _ELSE
 
-
-
 %%
 
-program
+program_DOUBLEDOT
   : function_list
       {  
         if(lookup_symbol("main", FUN) == NO_INDEX)
@@ -121,14 +142,26 @@ variable_list
   ;
 
 variable
-  : _TYPE _ID _SEMICOLON
+  : _TYPE _ID  _SEMICOLON
       {
         if(lookup_symbol($2, VAR|PAR) == NO_INDEX)
            insert_symbol($2, VAR, $1, ++var_num, NO_ATR);
         else 
            err("redefinition of '%s'", $2);
       }
+	| json_var
+	| list_var
   ;
+
+//*
+json_var
+	: _JSON _ID _SEMICOLON 
+	;
+
+//*
+list_var
+	: _LIST _ID _SEMICOLON 
+	;
 
 statement_list
   : /* empty */
@@ -141,20 +174,41 @@ statement
   | if_statement
   | return_statement
   | inc_statement
+  | do_while_statement
+	| for_each_statement
   ;
 
+//*
 inc_statement
-	: _ID 
-	{
-		if (lookup_symbol($1, FUN)!=NO_INDEX) {
-			err("Postincrement may be only used on variables, not functions.");
-		}
-		int idx = lookup_symbol($1, VAR|PAR);
-
-    		if(idx == NO_INDEX)
-      			err("invalid lvalue '%s' in assignment", $1); 
+  : _ID 
+  { 
+	if (lookup_symbol($1, FUN)!=NO_INDEX) {
+		err("Postincrement may be only used on variables, not functions.");
 	}
+	int idx = lookup_symbol($1, VAR|PAR);
+
+	if(idx == NO_INDEX)
+		err("invalid lvalue '%s' in assignment", $1); 
+  }
 	_INC _SEMICOLON
+  ;
+
+//*
+do_while_statement
+  : _DO statement _WHILE _LPAREN _ID _RELOP literal _RPAREN _SEMICOLON
+  {
+	int idx = -1;
+
+	if((idx = lookup_symbol($5, (VAR|PAR))) == -1)
+		err("invalid identifier in do_while");
+	if(get_type(idx) != get_type($7))
+		err("incompatible types in do_while");
+  }
+	;
+
+//*
+for_each_statement
+	: _FOR_EACH _EACH _ID _IN _ID compound_statement
 	;
 
 compound_statement
@@ -164,6 +218,7 @@ compound_statement
 assignment_statement
   : _ID _ASSIGN num_exp _SEMICOLON
       {
+printf("***2311***");
         int idx = lookup_symbol($1, VAR|PAR);
         if(idx == NO_INDEX)
           err("invalid lvalue '%s' in assignment", $1);
@@ -172,6 +227,51 @@ assignment_statement
             err("incompatible types in assignment");
         gen_mov($3, idx);
       }
+	| json_assignment_statement
+	| list_assignment_statement
+  ;
+
+//* dodati JSON type i dodati i gore i tu svugde
+json_assignment_statement
+  : _ID _ASSIGN _LBRACKET json_content _RBRACKET _SEMICOLON
+{printf("json_assignment_statement");}
+      //{
+      //  if(lookup_symbol($2, VAR|PAR) == NO_INDEX)
+       //    insert_symbol($2, VAR, $1, ++var_num, NO_ATR);
+      //  else 
+       //    err("redefinition of '%s'", $2);
+      //}
+  ;
+
+//*
+json_content
+  : //skroz izbaciti ovo sa stringom, jer je nemoguce koristiit string promenljivu na ovom nivou (izbaciti i u test podacima) 
+	| json_content _ID _DOUBLEDOT _ID json_content_ending {printf("json_content");}
+	| json_content _ID _DOUBLEDOT literal json_content_ending {printf("json_content");}
+  ;
+
+//* 
+json_content_ending
+	:
+	| _ZAPETA
+	;
+
+//*
+list_assignment_statement
+  : _ID _ASSIGN _LSQUAREBRACKER list_content _RSQUAREBRACKER _SEMICOLON
+	{printf("list_assignment_statement");}
+      //{
+      //  if(lookup_symbol($2, VAR|PAR) == NO_INDEX)
+       //    insert_symbol($2, VAR, $1, ++var_num, NO_ATR);
+      //  else 
+       //    err("redefinition of '%s'", $2);
+      //}
+  ;
+
+//*
+list_content
+  : literal
+	| list_content _ZAPETA literal
   ;
 
 num_exp
@@ -213,6 +313,14 @@ exp
   
   | _LPAREN num_exp _RPAREN
       { $$ = $2; }
+	//*
+	| _ID _DOT _ID //json_exp 
+			{
+				printf("***2311***");
+        //$$ = lookup_symbol($1, VAR|PAR);
+        //if($$ == NO_INDEX)
+        //  err("'%s' undeclared", $1);
+      }
   ;
 
 literal

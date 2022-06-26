@@ -99,7 +99,8 @@ class CyrilicsMapper():
             print("No filename parameter was passed.")
 
     def read(self):
-        self.new_filename = "parsed_" + self.full_filename
+        splits = self.full_filename.split('.')
+        self.new_filename = splits[0] + "_parsed" + "." + splits[1] 
 
         if (path.exists(self.full_filename)):
             f = open(self.full_filename, 'r')

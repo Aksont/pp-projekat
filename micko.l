@@ -16,7 +16,7 @@
 "inacse"               { return _ELSE; }	// else
 "vrni"                 { return _RETURN; }	// return
 
-"vrti"		       { return _FOR } // for
+"vrti"		       { return _FOR; } // for
 "stande"	       { return _BREAK; } // break
 "dok"		       { return _WHILE; } // while
 "radi"		       { return _DO; } // do (for do while loops)
@@ -26,15 +26,16 @@
 "podrazumevano"        { return _DEFAULT; } // default
 
 "jovan"		       { return _JSON; } // json ID = {["ID" : "ID"] || ["ID" : num]}
+":"		       { return _DOUBLEDOT; } // :
+"."		       { return _DOT; } // . for getting json member (user.age) 
+","		       { return _ZAPETA; } // ,
 
 "druzyba"	       { return _LIST; } // list / collection 
 "za"		       { return _FOR_EACH; } // for each element in 
 "svaki"                { return _EACH; } // each
 "unutar"               { return _IN; } // in list
-
-"dyordye"	       { yylval.i = _BOOL; return _TYPE; } // bool - George Bool
-"istina" 	       { return _TRUE; } // true
-"jeres"		       { return _FALSE; } // false
+"["                    { return _LSQUAREBRACKER; } // [] for list elements
+"]"		       { return _RSQUAREBRACKER; } // [] for list elements
 
 "++"		       { return _INC; }
 
