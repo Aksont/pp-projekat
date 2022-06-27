@@ -20,6 +20,10 @@
   int fcall_idx = -1;
   int lab_num = -1;
   FILE *output;
+
+  int case_count = 0;
+  int case_array[100];
+  int switch_id = -1;
 %}
 
 %union {
@@ -176,7 +180,21 @@ statement
   | inc_statement
   | do_while_statement
 	| for_each_statement
+	| switch_statement
+	| for_statement
   ;
+
+//*
+do_while_statement
+ : _DO compound_statement _WHILE _LPAREN _ID _RELOP literal _RPAREN _SEMICOLON
+	{
+		int idx = -1;
+		if((idx = lookup_symbol($5, (VAR|PAR))) == -1)
+			err("invalid identifier in do-while");
+		if(get_type(idx) != get_type($7))
+			err("incompatible types in do_while");
+	}
+ ;
 
 //*
 inc_statement
@@ -194,25 +212,63 @@ inc_statement
   ;
 
 //*
-do_while_statement
-  : _DO statement _WHILE _LPAREN _ID _RELOP literal _RPAREN _SEMICOLON
-  {
-	int idx = -1;
-
-	if((idx = lookup_symbol($5, (VAR|PAR))) == -1)
-		err("invalid identifier in do_while");
-	if(get_type(idx) != get_type($7))
-		err("incompatible types in do_while");
-  }
-	;
-
-//*
 for_each_statement
 	: _FOR_EACH _EACH _ID _IN _ID compound_statement
 	;
 
+//*
+switch_statement
+  : _SWITCH{printf("switch");} _LPAREN _ID _RPAREN _LBRACKET case_statements default_statement _RBRACKET
+  ;
+
+//*
+case_statements
+  : case_statement
+  | case_statements case_statement
+	;
+
+//*
+case_statement
+  : _CASE literal _DOUBLEDOT statement break
+  ;
+
+//*
+break
+  : 
+	| _BREAK _SEMICOLON
+  ;
+
+//*
+default_statement
+  : _DEFAULT _DOUBLEDOT statement
+  ;
+
+//*
+for_statement
+  : _FOR _LPAREN 
+		_TYPE _ID {
+			int i = lookup_symbol($4, PAR|VAR);
+			if(i != -1)
+				err("redefinition of variable '%s'", $4);
+			else
+				$<i>$ = insert_symbol($4, VAR, $3, 1, NO_ATR);
+		} _ASSIGN literal {
+				if($3 != get_type($7))
+				err("incompatible types in assignment");
+  	}_SEMICOLON 
+		rel_exp _SEMICOLON 
+		_ID {
+			$<i>$ = lookup_symbol($12, VAR);
+			if($<i>5 != $<i>$)
+			err("wrong var for increment");		
+		} _INC 
+		_RPAREN _LBRACKET statement_list _RBRACKET {
+			clear_symbols($<i>5); 
+		}
+	;
+
 compound_statement
-  : _LBRACKET statement_list _RBRACKET
+  : _LBRACKET statement_list break _RBRACKET
   ;
 
 assignment_statement
@@ -245,8 +301,7 @@ json_assignment_statement
 
 //*
 json_content
-  : //skroz izbaciti ovo sa stringom, jer je nemoguce koristiit string promenljivu na ovom nivou (izbaciti i u test podacima) 
-	| json_content _ID _DOUBLEDOT _ID json_content_ending {printf("json_content");}
+  : 
 	| json_content _ID _DOUBLEDOT literal json_content_ending {printf("json_content");}
   ;
 
@@ -369,7 +424,7 @@ if_statement
   : if_part %prec ONLY_IF
       { code("\n@exit%d:", $1); }
 
-  | if_part _ELSE statement
+  | if_part _ELSE compound_statement 
       { code("\n@exit%d:", $1); }
   ;
 
@@ -384,7 +439,7 @@ if_part
         code("\n\t\t%s\t@false%d", opp_jumps[$4], $<i>3);
         code("\n@true%d:", $<i>3);
       }
-    _RPAREN statement
+    _RPAREN compound_statement
       {
         code("\n\t\tJMP \t@exit%d", $<i>3);
         code("\n@false%d:", $<i>3);

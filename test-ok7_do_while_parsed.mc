@@ -1,4 +1,4 @@
-ceo main( ceo a) {
+ceo main() {
 	ceo a;
 	ceo iks;
 	a = 0;
