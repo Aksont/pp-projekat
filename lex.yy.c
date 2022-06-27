@@ -949,7 +949,7 @@ YY_RULE_SETUP
 case 14:
 YY_RULE_SETUP
 #line 28 "micko.l"
-{ return _JSON; } // json ID = {["ID" : "ID"] || ["ID" : num]}
+{ yylval.i = JSON;  return _TYPE;} // json ID = {["ID" : "ID"] || ["ID" : num]}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
@@ -969,7 +969,7 @@ YY_RULE_SETUP
 case 18:
 YY_RULE_SETUP
 #line 33 "micko.l"
-{ return _LIST; } // list / collection 
+{ yylval.i = LIST;  return _TYPE; } // list / collection 
 	YY_BREAK
 case 19:
 YY_RULE_SETUP

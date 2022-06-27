@@ -67,18 +67,17 @@ extern int yydebug;
     _SWITCH = 277,
     _CASE = 278,
     _DEFAULT = 279,
-    _JSON = 280,
-    _DOUBLEDOT = 281,
-    _DOT = 282,
-    _ZAPETA = 283,
-    _LIST = 284,
-    _FOR_EACH = 285,
-    _EACH = 286,
-    _IN = 287,
-    _LSQUAREBRACKER = 288,
-    _RSQUAREBRACKER = 289,
-    _INC = 290,
-    ONLY_IF = 291
+    _DOUBLEDOT = 280,
+    _DOT = 281,
+    _ZAPETA = 282,
+    _LIST = 283,
+    _FOR_EACH = 284,
+    _EACH = 285,
+    _IN = 286,
+    _LSQUAREBRACKER = 287,
+    _RSQUAREBRACKER = 288,
+    _INC = 289,
+    ONLY_IF = 290
   };
 #endif
 
@@ -87,12 +86,12 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 29 "micko.y" /* yacc.c:1909  */
+#line 31 "micko.y" /* yacc.c:1909  */
 
   int i;
   char *s;
 
-#line 96 "micko.tab.h" /* yacc.c:1909  */
+#line 95 "micko.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

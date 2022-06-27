@@ -25,12 +25,12 @@
 "slucsaj"	       { return _CASE; } // case
 "podrazumevano"        { return _DEFAULT; } // default
 
-"jovan"		       { return _JSON; } // json ID = {["ID" : "ID"] || ["ID" : num]}
+"jovan"		       { yylval.i = JSON;  return _TYPE;} // json ID = {["ID" : "ID"] || ["ID" : num]}
 ":"		       { return _DOUBLEDOT; } // :
 "."		       { return _DOT; } // . for getting json member (user.age) 
 ","		       { return _ZAPETA; } // ,
 
-"druzyba"	       { return _LIST; } // list / collection 
+"druzyba"	       { yylval.i = LIST;  return _TYPE; } // list / collection 
 "za"		       { return _FOR_EACH; } // for each element in 
 "svaki"                { return _EACH; } // each
 "unutar"               { return _IN; } // in list

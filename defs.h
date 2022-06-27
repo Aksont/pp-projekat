@@ -23,11 +23,11 @@ extern int yyerror(char *s);
           if (++out_lin > 2000) err("Too many output lines"), exit(1); })
 
 //tipovi podataka
-enum types { NO_TYPE, INT, UINT, _BOOL }; 
+enum types { NO_TYPE, INT, UINT, JSON, LIST }; 
 
 //vrste simbola (moze ih biti maksimalno 32)
 enum kinds { NO_KIND = 0x1, REG = 0x2, LIT = 0x4, 
-             FUN = 0x8, VAR = 0x10, PAR = 0x20 };
+             FUN = 0x8, VAR = 0x10, PAR = 0x20, JSON_ATTR = 0x40 };
 
 //konstante arithmetickih operatora
 enum arops { ADD, SUB, MUL, DIV, AROP_NUMBER };

@@ -24,6 +24,9 @@
   int case_count = 0;
   int case_array[100];
   int switch_id = -1;
+
+	int current_json_index = -1;
+	int current_list_index = -1;
 %}
 
 %union {
@@ -57,7 +60,6 @@
 %token _CASE
 %token _DEFAULT
 
-%token _JSON
 %token _DOUBLEDOT
 %token _DOT
 %token _ZAPETA
@@ -153,19 +155,7 @@ variable
         else 
            err("redefinition of '%s'", $2);
       }
-	| json_var
-	| list_var
   ;
-
-//*
-json_var
-	: _JSON _ID _SEMICOLON 
-	;
-
-//*
-list_var
-	: _LIST _ID _SEMICOLON 
-	;
 
 statement_list
   : /* empty */
@@ -289,38 +279,58 @@ printf("***2311***");
 
 //* dodati JSON type i dodati i gore i tu svugde
 json_assignment_statement
-  : _ID _ASSIGN _LBRACKET json_content _RBRACKET _SEMICOLON
-{printf("json_assignment_statement");}
-      //{
-      //  if(lookup_symbol($2, VAR|PAR) == NO_INDEX)
-       //    insert_symbol($2, VAR, $1, ++var_num, NO_ATR);
-      //  else 
-       //    err("redefinition of '%s'", $2);
-      //}
+  : _ID _ASSIGN _LBRACKET 
+	{
+			int idx = lookup_symbol($1, VAR|PAR);
+      if(idx == NO_INDEX)
+        err("invalid lvalue '%s' in assignment", $1);
+      else
+        if(get_type(idx) != JSON)
+          err("incompatible types in assignment");
+
+			current_json_index = idx;
+			//TODO gen code
+  }
+		json_content _RBRACKET _SEMICOLON
+	{print_symtab();}
   ;
 
 //*
 json_content
   : 
-	| json_content _ID _DOUBLEDOT literal json_content_ending {printf("json_content");}
+	| json_content _ID _DOUBLEDOT literal json_content_ending 
+	{
+		int idx = lookup_json_attribute($2, JSON_ATTR, current_json_index);
+    if(idx == NO_INDEX)
+			insert_symbol($2, JSON_ATTR, INT, $4, current_json_index);
+		else
+      err("already defined attribute '%s' in this json", $2);
+		//TODO gen code
+	}
   ;
 
 //* 
 json_content_ending
 	:
-	| _ZAPETA
+	| _ZAPETA //TODO gen code
 	;
 
 //*
 list_assignment_statement
-  : _ID _ASSIGN _LSQUAREBRACKER list_content _RSQUAREBRACKER _SEMICOLON
-	{printf("list_assignment_statement");}
-      //{
-      //  if(lookup_symbol($2, VAR|PAR) == NO_INDEX)
-       //    insert_symbol($2, VAR, $1, ++var_num, NO_ATR);
-      //  else 
-       //    err("redefinition of '%s'", $2);
-      //}
+  : _ID _ASSIGN _LSQUAREBRACKER
+	{
+			int idx = lookup_symbol($1, VAR|PAR);
+      if(idx == NO_INDEX)
+        err("invalid lvalue '%s' in assignment", $1);
+      else
+        if(get_type(idx) != LIST)
+          err("incompatible types in assignment");
+
+			current_list_index = idx;
+			//TODO gen code
+  }
+ 		list_content _RSQUAREBRACKER _SEMICOLON
+	{print_symtab();}
   ;
 
 //*
@@ -371,10 +381,14 @@ exp
 	//*
 	| _ID _DOT _ID //json_exp 
 			{
-				printf("***2311***");
-        //$$ = lookup_symbol($1, VAR|PAR);
-        //if($$ == NO_INDEX)
-        //  err("'%s' undeclared", $1);
+				int json_idx = lookup_symbol($1, VAR|PAR);
+				if(json_idx == NO_INDEX)
+					err("such var does not exist in chosen json");
+				int attr_idx = lookup_json_attribute($3, JSON_ATTR, json_idx);
+				if(attr_idx == NO_INDEX)
+          err("such attribute or json does not exist in chosen json");
+				$$ = attr_idx;
+				//TODO gen code
       }
   ;
 
