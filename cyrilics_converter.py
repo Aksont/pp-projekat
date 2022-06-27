@@ -82,26 +82,18 @@ class CyrilicsMapper():
         
     def do(self):
         if self.parse_command_line_args():
-            print("I am reading file...\n")
             if self.read():
-                print(self.content)
-                print()
-
-                print("Parsing...\n")
                 self.parse_cyrilic_content()
                 print(self.parsed_content)
-                print()
-
-                print("Creating new file...\n")
-                self.create_new_file()
-                print("The file " +  self.new_filename + " is created.")
+                # Umesto direktno u fajl ispisuje rezultate u konzolu (na standardni output)
+                # i onda posle u run.sh to preusmerava u fajl ">" znakom.
+                # "python cyrilics_converter.py test.txt > test_parsed.txt"
         else:
-            print("No filename parameter was passed.")
+            sys.exit("No filename parameter was passed.")
+            # sys.exit umesto printa jer ovo ne ide na standardni output tako da error poruka
+            # neće završiti u fajlu, već će biti ispisana u konzolu.
 
     def read(self):
-        splits = self.full_filename.split('.')
-        self.new_filename = splits[0] + "_parsed" + "." + splits[1] 
-
         if (path.exists(self.full_filename)):
             f = open(self.full_filename, 'r')
             self.content = f.read()
@@ -109,9 +101,9 @@ class CyrilicsMapper():
             
             return True
         else:
-            print("File named " + self.full_filename + " does not exist.")
-
-            return False
+            sys.exit("File named " + self.full_filename + " does not exist.")
+            # sys.exit umesto printa jer ovo ne ide na standardni output tako da error poruka
+            # neće završiti u fajlu, već će biti ispisana u konzolu.
 
     def parse_cyrilic_content(self):
         self.parsed_content = ""
@@ -120,11 +112,6 @@ class CyrilicsMapper():
                 self.parsed_content += self.cyrilics_mapper[c]
             else:
                 self.parsed_content += c
-
-    def create_new_file(self):
-        new_f = open(self.new_filename, "w")
-        new_f.write(self.parsed_content)
-        new_f.close()
 
     def parse_command_line_args(self):
         if (len(sys.argv) == 1):

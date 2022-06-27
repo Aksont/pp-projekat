@@ -1,8 +1,0 @@
-Ja sam cyirilicsan 
-tekst{
-{ Basysysy su ovo sve cyirilicsna slova vidi dy sy zycycysycsnylyaalylylyly
-hehe
-};
-123 
-a ko si ti?;
-}
