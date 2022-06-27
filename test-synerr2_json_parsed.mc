@@ -10,7 +10,7 @@ ceo main() {
 		dob: 5
 	};
 
-	m = {
+	j = {
 		cena : 25,
 		dob: 3
 	};
@@ -18,6 +18,6 @@ ceo main() {
 	a = 0;
 	iks = 0;
 
-	iks = j.dob + m.dob;
+	iks = j,dob + m.dob;
 }
 

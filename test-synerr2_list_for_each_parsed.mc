@@ -5,10 +5,10 @@ ceo main() {
 	druzyba m;	
 	a = 0;
 	
-	d = [1, 5, 6, 7];
+	d = [1, 5, 6, 7;
 	m = [3, 4];
 	
-	za svaki iks unutar d {
+	za svaki iks unutar a {
 		a = a + iks;
 	}
 

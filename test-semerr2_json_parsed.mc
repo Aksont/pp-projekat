@@ -7,7 +7,7 @@ ceo main() {
 
 	j = {
 		cena : 11,
-		dob: 5
+		cena: 5
 	};
 
 	m = {

@@ -27,6 +27,7 @@
 
 	int current_json_index = -1;
 	int current_list_index = -1;
+	int current_list_size = 0;
 %}
 
 %union {
@@ -84,7 +85,7 @@
 
 program_DOUBLEDOT
   : function_list
-      {  
+      {  //* ovde bi bilo dobro da moze cirilica da se stavi, ali ne moze :(
         if(lookup_symbol("main", FUN) == NO_INDEX)
           err("undefined reference to 'main'");
       }
@@ -203,12 +204,31 @@ inc_statement
 
 //*
 for_each_statement
-	: _FOR_EACH _EACH _ID _IN _ID compound_statement
+	: _FOR_EACH _EACH _ID 
+	{
+		int idx = lookup_symbol($3, VAR|PAR);
+		if(idx == NO_INDEX)
+			err("such var does not exist");
+		if(get_type(idx) == INT)
+			printf("ok"); 
+		else
+      err("var is not list");
+	}
+
+_IN _ID 
+	{
+		int idx = lookup_symbol($6, VAR|PAR);
+    if(idx == NO_INDEX)
+      err("such var does not exist");
+    if(get_type(idx) != LIST)
+      err("var is not list");
+	}
+	compound_statement
 	;
 
 //*
 switch_statement
-  : _SWITCH{printf("switch");} _LPAREN _ID _RPAREN _LBRACKET case_statements default_statement _RBRACKET
+  : _SWITCH _LPAREN _ID _RPAREN _LBRACKET case_statements default_statement _RBRACKET
   ;
 
 //*
@@ -264,7 +284,6 @@ compound_statement
 assignment_statement
   : _ID _ASSIGN num_exp _SEMICOLON
       {
-printf("***2311***");
         int idx = lookup_symbol($1, VAR|PAR);
         if(idx == NO_INDEX)
           err("invalid lvalue '%s' in assignment", $1);
@@ -277,7 +296,7 @@ printf("***2311***");
 	| list_assignment_statement
   ;
 
-//* dodati JSON type i dodati i gore i tu svugde
+//* 
 json_assignment_statement
   : _ID _ASSIGN _LBRACKET 
 	{
@@ -289,7 +308,6 @@ json_assignment_statement
           err("incompatible types in assignment");
 
 			current_json_index = idx;
-			//TODO gen code
   }
 		json_content _RBRACKET _SEMICOLON
 	{print_symtab();}
@@ -305,14 +323,13 @@ json_content
 			insert_symbol($2, JSON_ATTR, INT, $4, current_json_index);
 		else
       err("already defined attribute '%s' in this json", $2);
-		//TODO gen code
 	}
   ;
 
 //* 
 json_content_ending
 	:
-	| _ZAPETA //TODO gen code
+	| _ZAPETA
 	;
 
 //*
@@ -326,17 +343,30 @@ list_assignment_statement
         if(get_type(idx) != LIST)
           err("incompatible types in assignment");
 
+			current_list_size = 0;
 			current_list_index = idx;
-			//TODO gen code
   }
  		list_content _RSQUAREBRACKER _SEMICOLON
-	{print_symtab();}
+	{
+		int idx = lookup_symbol($1, VAR|PAR);
+		set_atr2(idx, current_list_size);
+		print_symtab();
+	}
   ;
 
 //*
 list_content
   : literal
+	{
+		set_atr2($1, current_list_index);
+		current_list_size++;
+	}
 	| list_content _ZAPETA literal
+	{
+		set_atr2($3, current_list_index);
+		current_list_size++;
+	}
+
   ;
 
 num_exp
@@ -382,13 +412,19 @@ exp
 	| _ID _DOT _ID //json_exp 
 			{
 				int json_idx = lookup_symbol($1, VAR|PAR);
+
 				if(json_idx == NO_INDEX)
 					err("such var does not exist in chosen json");
+
+				if(get_type(json_idx) != JSON)
+					err("var is not JSON type");
+
 				int attr_idx = lookup_json_attribute($3, JSON_ATTR, json_idx);
+
 				if(attr_idx == NO_INDEX)
-          err("such attribute or json does not exist in chosen json");
+          err("such attribute does not exist in chosen json");
+
 				$$ = attr_idx;
-				//TODO gen code
       }
   ;
 

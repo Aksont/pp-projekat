@@ -29,7 +29,7 @@ int insert_literal(char *str, unsigned type);
 // Vraca indeks pronadjenog simbola ili vraca -1.
 int lookup_symbol(char *name, unsigned kind);
 
-// Vraca indeks pronadjenog simbola ili vraca -1.
+//*
 int lookup_json_attribute(char *name, unsigned kind, int json_index);
 
 // set i get metode za polja tabele simbola

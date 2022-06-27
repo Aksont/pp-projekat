@@ -8,9 +8,9 @@ ceo main() {
 	j = {
 		cena : 11,
 		dob: 5
-	};
+	;
 
-	m = {
+	j = {
 		cena : 25,
 		dob: 3
 	};
